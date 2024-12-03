@@ -1,0 +1,91 @@
+ {
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "name": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                { "durationMs": 900000 },
+                { "durationMs": 3600000 },
+                { "durationMs": 86400000 },
+                { "durationMs": 604800000 },
+                { "durationMs": 2592000000 }
+              ],
+              "allowCustom": true
+            }
+          }
+        ],
+        "style": "pills"
+      },
+      "name": "Time Range Selector"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize TotalTraffic = sum(TotalBytes)/1048576 by AppName\n| top 10 by TotalTraffic desc",
+        "title": "Top 10 Applications by Network Traffic",
+        "visualization": "barchart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Top Applications by Traffic"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "SecurityAlert\n| where ProductName == \"Microsoft Cloud App Security\"\n| where AlertType has \"DISCOVERY\"\n| summarize Count = count() by AlertName, AlertSeverity",
+        "title": "Discovery Alerts Summary",
+        "visualization": "table",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Discovery Alerts Summary"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "SecurityAlert\n| where ProductName == \"Microsoft Cloud App Security\"\n| where AlertType has \"DISCOVERY\"\n| summarize Count = count() by bin(TimeGenerated, 1d)",
+        "title": "Alerts Trend Over Time",
+        "visualization": "linechart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Alerts Trend Over Time"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize TrafficUpload = sum(UploadedBytes)/1048576, TrafficDownload = sum(DownloadedBytes)/1048576 by UserName\n| order by TrafficUpload desc",
+        "title": "User Traffic Breakdown",
+        "visualization": "table",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "User Traffic Breakdown"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize AppCount = dcount(AppName) by AppCategory\n| order by AppCount desc",
+        "title": "Applications by Category",
+        "visualization": "piechart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Applications by Category"
+    }
+  ],
+  "styleSettings": {},
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

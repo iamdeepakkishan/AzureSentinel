@@ -1,0 +1,110 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "TimeRange",
+            "name": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                { "durationMs": 86400000, "name": "Last 24 Hours" },
+                { "durationMs": 604800000, "name": "Last 7 Days" },
+                { "durationMs": 2592000000, "name": "Last 30 Days" }
+              ],
+              "allowCustom": true
+            }
+          }
+        ],
+        "style": "pills"
+      },
+      "name": "Time Range Selector"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize TotalTrafficMB = sum(TotalBytes)/1048576 by AppName\n| top 10 by TotalTrafficMB desc",
+        "title": "Top 10 Applications by Network Traffic (MB)",
+        "visualization": "barchart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Top Applications by Network Traffic"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "SecurityAlert\n| where ProductName == \"Microsoft Cloud App Security\"\n| summarize TotalAlerts = count() by AlertSeverity",
+        "title": "Alert Severity Distribution",
+        "visualization": "piechart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Alert Severity Distribution"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "SecurityAlert\n| where ProductName == \"Microsoft Cloud App Security\"\n| where AlertType has \"DISCOVERY\"\n| summarize Count = count() by bin(TimeGenerated, 1d)",
+        "title": "Discovery Alerts Over Time",
+        "visualization": "linechart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Discovery Alerts Over Time"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize UploadedTrafficMB = sum(UploadedBytes)/1048576, DownloadedTrafficMB = sum(DownloadedBytes)/1048576 by UserName\n| top 10 by UploadedTrafficMB desc",
+        "title": "Top Users by Uploaded Traffic (MB)",
+        "visualization": "table",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Top Users by Uploaded Traffic"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize AppCount = dcount(AppName) by AppCategory\n| top 5 by AppCount desc",
+        "title": "Top Application Categories by Count",
+        "visualization": "columnchart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Top Application Categories"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| where AppTags contains \"High Risk\"\n| summarize TotalTrafficMB = sum(TotalBytes)/1048576 by AppName\n| top 10 by TotalTrafficMB desc",
+        "title": "High-Risk Applications by Traffic (MB)",
+        "visualization": "barchart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "High-Risk Applications by Traffic"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "McasShadowItReporting\n| summarize TotalBytesMB = sum(TotalBytes)/1048576 by bin(TimeGenerated, 1d)\n| order by TimeGenerated asc",
+        "title": "Total Network Traffic Over Time (MB)",
+        "visualization": "areachart",
+        "timeContextFromParameter": "TimeRange"
+      },
+      "name": "Total Network Traffic Over Time"
+    }
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
